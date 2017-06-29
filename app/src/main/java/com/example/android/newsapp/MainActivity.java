@@ -7,10 +7,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Button;
 
+import com.example.android.newsapp.model.NewsItem;
 import com.example.android.newsapp.utilities.NetworkUtils;
 
 import java.net.URL;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.json.JSONException;
 
 public class MainActivity extends AppCompatActivity {
 

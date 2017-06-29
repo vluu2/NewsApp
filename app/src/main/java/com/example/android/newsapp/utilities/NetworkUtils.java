@@ -3,12 +3,21 @@ package com.example.android.newsapp.utilities;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.android.newsapp.model.NewsItem;
+
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * Created by Vincent on 6/20/2017.
@@ -70,5 +79,26 @@ public final class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    public static ArrayList<NewsItem> parseJSON(String json) throws JSONException {
+        ArrayList<NewsItem> result = new ArrayList<>();
+        JSONObject main = new JSONObject(json);
+        JSONArray articles = main.getJSONArray("items");
+
+        for(int i = 0; i < articles.length(); i++) {
+            JSONObject article = articles.getJSONObject(i);
+
+            String author = article.getString("author");
+            String title = article.getString("title");
+            String description = article.getString("description");
+            String url = article.getString("url");
+            String imgToUrl = article.getString("urlToImage");
+            String publishedAt = article.getString("publishedAt");
+
+            NewsItem newsItem = new NewsItem(author, title, description, url, imgToUrl, publishedAt);
+            result.add(newsItem);
+        }
+        return result;
     }
 }
