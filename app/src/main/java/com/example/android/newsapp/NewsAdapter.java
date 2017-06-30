@@ -29,17 +29,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ItemHolder> {
         void onItemClick(int clickedItemIndex);
     }
 
-    // Displays each ViewHolders on screen
     @Override
     public ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Retrieves context of the current activity and displays to screen
+
         Context context = parent.getContext();
 
-        // Retrieves views from the xml file
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        // True -> No changes to view
-        // False -> child views go on top
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(R.layout.news_articles, parent, shouldAttachToParentImmediately);
@@ -49,7 +45,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ItemHolder> {
         return holder;
     }
 
-    // Displays information of the article on screen at a specific position
     @Override
     public void onBindViewHolder(ItemHolder holder, int position) {
         holder.bind(position);
@@ -57,7 +52,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ItemHolder> {
 
     @Override
     public int getItemCount() {
-        return newsItems.size();
+        return newsItems == null ? 0 :newsItems.size();
     }
 
     public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -68,7 +63,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ItemHolder> {
         public ItemHolder(View view) {
             super(view);
 
-            // Gets references of id's from article.xml file
             mTitleText = (TextView) view.findViewById(R.id.title);
             mDescriptionText = (TextView) view.findViewById(R.id.description);
             mTimeText = (TextView) view.findViewById(R.id.time);
@@ -76,12 +70,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ItemHolder> {
             view.setOnClickListener(this);
         }
 
-        // Retrieves position of a specific article and setups the views of that article
         public void bind(int pos) {
-            // Retrieves position of specific article / item
             NewsItem news = newsItems.get(pos);
 
-            // Sets the text of each view in specific positions on screen
             mTitleText.setText(news.getTitle());
             mDescriptionText.setText(news.getDescription());
             mTimeText.setText(news.getPublishedAt());

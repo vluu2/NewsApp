@@ -30,21 +30,17 @@ public final class NetworkUtils {
 
     /* Query parameters here */
     private final static String QUERY_PARAM_SOURCE = "source";
-    private final static String source = "the-next-web";
 
     private final static String QUERY_PARAM_SORTBY = "sortBy";
-    private final static String sortby = "latest";
 
     private final static String QUERY_PARAM_APIKEY = "apiKey";
-    // TODO: Insert Working API Key here
-    private final static String apikey = "";
 
     public static ArrayList<NewsItem> parseJSON(String json) throws JSONException {
         ArrayList<NewsItem> newsList = new ArrayList<>();
         JSONObject main = new JSONObject(json);
         JSONArray articles = main.getJSONArray("articles");
 
-        for(int i = 0; i < newsList.size(); i++) {
+        for(int i = 0; i < articles.length(); i++) {
             JSONObject article = articles.getJSONObject(i);
 
             String author = article.getString("author");
@@ -60,7 +56,7 @@ public final class NetworkUtils {
         return newsList;
     }
 
-    public static URL buildUrl(String searchQuery, String sortBy, String apiKey) {
+    public static URL buildUrl(String source, String sortby, String apikey) {
         Uri builtUri = Uri.parse(NEWS_BASE_URL).buildUpon().
                 appendQueryParameter(QUERY_PARAM_SOURCE, source).
                 appendQueryParameter(QUERY_PARAM_SORTBY, sortby).

@@ -1,5 +1,7 @@
 package com.example.android.newsapp;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +24,9 @@ import org.json.JSONException;
 public class MainActivity extends AppCompatActivity {
 
     static final String TAG = "mainactivity";
+
     private RecyclerView rv;
+     NewsAdapter nullAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
         rv = (RecyclerView) findViewById(R.id.recycler_view);
 
         rv.setLayoutManager(new LinearLayoutManager(this));
+
+        rv.setAdapter(nullAdapter);
+
+        new FetchNewsTask().execute();
 
     }
 
@@ -94,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
                         String url = listofNews.get(clickedItemIndex).getUrl();
 
                         Log.d(TAG, String.format("URL CLICKED: %s", url));
+
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intent);
 
                     }
                 });
