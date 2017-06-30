@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.example.android.newsapp.model.NewsItem;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -37,10 +36,31 @@ public final class NetworkUtils {
     private final static String sortby = "latest";
 
     private final static String QUERY_PARAM_APIKEY = "apiKey";
-    /* Insert Real API key here */
-    private final static String apikey = " Insert Api Key here ";
+    // TODO: Insert Working API Key here
+    private final static String apikey = "";
 
-    public static URL buildUrl() {
+    public static ArrayList<NewsItem> parseJSON(String json) throws JSONException {
+        ArrayList<NewsItem> newsList = new ArrayList<>();
+        JSONObject main = new JSONObject(json);
+        JSONArray articles = main.getJSONArray("articles");
+
+        for(int i = 0; i < newsList.size(); i++) {
+            JSONObject article = articles.getJSONObject(i);
+
+            String author = article.getString("author");
+            String title = article.getString("title");
+            String description = article.getString("description");
+            String url = article.getString("url");
+            String imgToUrl = article.getString("urlToImage");
+            String publishedAt = article.getString("publishedAt");
+
+            NewsItem newsItem = new NewsItem(author, title, description, url, imgToUrl, publishedAt);
+            newsList.add(newsItem);
+        }
+        return newsList;
+    }
+
+    public static URL buildUrl(String searchQuery, String sortBy, String apiKey) {
         Uri builtUri = Uri.parse(NEWS_BASE_URL).buildUpon().
                 appendQueryParameter(QUERY_PARAM_SOURCE, source).
                 appendQueryParameter(QUERY_PARAM_SORTBY, sortby).
@@ -79,26 +99,5 @@ public final class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
-    }
-
-    public static ArrayList<NewsItem> parseJSON(String json) throws JSONException {
-        ArrayList<NewsItem> result = new ArrayList<>();
-        JSONObject main = new JSONObject(json);
-        JSONArray articles = main.getJSONArray("items");
-
-        for(int i = 0; i < articles.length(); i++) {
-            JSONObject article = articles.getJSONObject(i);
-
-            String author = article.getString("author");
-            String title = article.getString("title");
-            String description = article.getString("description");
-            String url = article.getString("url");
-            String imgToUrl = article.getString("urlToImage");
-            String publishedAt = article.getString("publishedAt");
-
-            NewsItem newsItem = new NewsItem(author, title, description, url, imgToUrl, publishedAt);
-            result.add(newsItem);
-        }
-        return result;
     }
 }

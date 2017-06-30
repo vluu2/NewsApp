@@ -1,13 +1,14 @@
 package com.example.android.newsapp;
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Button;
 
 import com.example.android.newsapp.model.NewsItem;
 import com.example.android.newsapp.utilities.NetworkUtils;
@@ -20,47 +21,18 @@ import org.json.JSONException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mNewsTextView;
-    private URL newsUrl;
+    static final String TAG = "mainactivity";
+    private RecyclerView rv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mNewsTextView = (TextView) findViewById(R.id.news_data);
-        newsUrl = NetworkUtils.buildUrl();
+        rv = (RecyclerView) findViewById(R.id.recycler_view);
 
-        loadNewsData();
-    }
+        rv.setLayoutManager(new LinearLayoutManager(this));
 
-    private void loadNewsData() {
-        new FetchNewsTask().execute();
-    }
-
-    private class FetchNewsTask extends AsyncTask<URL, Void, String> {
-
-        @Override
-        protected String doInBackground(URL... params) {
-
-            String result = null;
-
-            try {
-                result = NetworkUtils.getResponseFromHttpUrl(newsUrl);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String newsData) {
-            if (newsData != null) {
-                mNewsTextView.setText(newsData);
-            }
-        }
     }
 
     @Override
@@ -77,12 +49,56 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.refresh) {
-            mNewsTextView.setText("");
-            loadNewsData();
-            return true;
+        if (id == R.id.search) {
+            FetchNewsTask task = new FetchNewsTask();
+            task.execute();
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
+    class FetchNewsTask extends AsyncTask<URL, Void, ArrayList<NewsItem>> {
+
+        String searchQuery = "the-next-web";
+        String sortBy = "latest";
+        // TODO: Insert Working API Key here
+        String apiKey = "";
+
+        @Override
+        protected ArrayList<NewsItem> doInBackground(URL... params) {
+
+            ArrayList<NewsItem> newsList = null;
+            URL newsUrl = NetworkUtils.buildUrl(searchQuery, sortBy, apiKey);
+            Log.d(TAG, "url: " + newsUrl.toString());
+
+            try {
+                String jsonResponse = NetworkUtils.getResponseFromHttpUrl(newsUrl);
+                newsList = NetworkUtils.parseJSON(jsonResponse);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return newsList;
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<NewsItem> listofNews) {
+            super.onPostExecute(listofNews);
+
+            if (listofNews != null) {
+                NewsAdapter adapter = new NewsAdapter(listofNews, new NewsAdapter.ItemClickListener() {
+                    @Override
+                    public void onItemClick(int clickedItemIndex) {
+                        String url = listofNews.get(clickedItemIndex).getUrl();
+
+                        Log.d(TAG, String.format("URL CLICKED: %s", url));
+
+                    }
+                });
+                rv.setAdapter(adapter);
+            }
+        }
+    }
 }
