@@ -28,12 +28,36 @@ public final class NetworkUtils {
 
     private static final String NEWS_BASE_URL =  "https://newsapi.org/v1/articles?";
 
+    private final static String source = "the-next-web";
+    private final static String sortBy = "latest";
+    // TODO: Insert Working API Key here
+    private final static String apiKey = "";
+
     /* Query parameters here */
     private final static String QUERY_PARAM_SOURCE = "source";
-
     private final static String QUERY_PARAM_SORTBY = "sortBy";
-
     private final static String QUERY_PARAM_APIKEY = "apiKey";
+
+    public static URL buildUrl() {
+        Uri builtUri = Uri.parse(NEWS_BASE_URL).buildUpon().
+                appendQueryParameter(QUERY_PARAM_SOURCE, source).
+                appendQueryParameter(QUERY_PARAM_SORTBY, sortBy).
+                appendQueryParameter(QUERY_PARAM_APIKEY, apiKey).
+                build();
+
+        URL url = null;
+
+        try {
+            url = new URL(builtUri.toString());
+        }
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URI: " + url);
+
+        return url;
+    }
 
     public static ArrayList<NewsItem> parseJSON(String json) throws JSONException {
         ArrayList<NewsItem> newsList = new ArrayList<>();
@@ -54,27 +78,6 @@ public final class NetworkUtils {
             newsList.add(newsItem);
         }
         return newsList;
-    }
-
-    public static URL buildUrl(String source, String sortby, String apikey) {
-        Uri builtUri = Uri.parse(NEWS_BASE_URL).buildUpon().
-                appendQueryParameter(QUERY_PARAM_SOURCE, source).
-                appendQueryParameter(QUERY_PARAM_SORTBY, sortby).
-                appendQueryParameter(QUERY_PARAM_APIKEY, apikey).
-                build();
-
-        URL url = null;
-
-        try {
-            url = new URL(builtUri.toString());
-        }
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        Log.v(TAG, "Built URI: " + url);
-
-        return url;
     }
 
     /* This method goes to the API and grabs the JSON string */
